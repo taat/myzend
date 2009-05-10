@@ -11,6 +11,13 @@ class IndexController extends Zend_Controller_Action
     public function indexAction()
     {
         // action body
+
+        // testing Doctrine
+        $q = Doctrine_Query::create()
+            ->from('Test t')
+            ->limit(2)
+            ->execute();
+        var_dump($q->toArray());
     }
 
 

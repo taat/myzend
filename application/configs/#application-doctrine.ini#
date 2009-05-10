@@ -1,0 +1,31 @@
+; Add these to application.ini
+
+[production]
+autoloadernamespaces.0 = "My"
+autoloadernamespaces.1 = "Doctrine"
+pluginPaths.My_Application_Resource = "My/Application/Resource"
+
+; Doctrine custom paths
+; Required if different than default
+
+; resources.doctrine.data_fixtures_path = APPLICATION_PATH "/data/fixtures"
+; resources.doctrine.models_path = APPLICATION_PATH "/models"
+; resources.doctrine.migrations_path = APPLICATION_PATH "/migrations"
+; resources.doctrine.sql_path = APPLICATION_PATH "/data/sql"
+; resources.doctrine.yaml_schema_path = APPLICATION_PATH "/schema"
+
+[testing : production]
+; Doctrine connection settings for testing
+resources.doctrine.adapter  = pgsql
+resources.doctrine.host     = localhost
+resources.doctrine.dbname   = test
+resources.doctrine.username = test
+resources.doctrine.password = test
+
+[development : production]
+; Doctrine connection settings for production site
+resources.doctrine.adapter  = pgsql
+resources.doctrine.host     = localhost
+resources.doctrine.dbname   = test
+resources.doctrine.username = test
+resources.doctrine.password = test
