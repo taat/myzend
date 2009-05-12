@@ -1,3 +1,5 @@
+<!-- Zend syntax test -->
+<?= $this->doctype() ?>
 <style>
 
     img {
@@ -46,4 +48,7 @@
             <a href="http://">PHPTAL Website</a>
         </div>
     </div>
+
+    <h2>PHPTAL Helper Test</h2>
+    <tal:block tal:content="helper:doctype()"></tal:block>
 </center>

@@ -5,6 +5,17 @@
 class ZendX_Phptal_View extends Zend_View_Abstract
     {
 
+        /**
+         * Constructor
+         * @access public
+         */
+        public function __construct () {
+            $this->_engine = new PHPTAL;
+            $this->_engine->set('this', $this);
+            $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
+            $viewRenderer->setView($this);
+        }
+
     /**
      * PHPTAL object
      * @access private
@@ -38,8 +49,7 @@ class ZendX_Phptal_View extends Zend_View_Abstract
      * @param object PHPTAL $engine
      */
     public function setEngine(PHPTAL $engine) {
-        $this->_engine = $engine;
-        $this->_engine->set('this', $this);
+
         return $this;
     }
 
@@ -125,7 +135,7 @@ class ZendX_Phptal_View extends Zend_View_Abstract
         $this->_engine->setTemplate(func_get_arg(0));
             try {
                 echo $this->_engine->execute();
-            } catch (Zend_View_Exception $e) {
+            } catch (ZendX_Phptal_Exception $e) {
                 throw new Zend_View_Exception($e);
             }
         }
@@ -143,7 +153,5 @@ class ZendX_Phptal_View extends Zend_View_Abstract
 * @param bool $nothrow
 */
 function phptal_tales_helper($src, $nothrow) {
-    $src = 'this->' . trim($src);
-    // require_once 'PHPTAL/Php/Transformer.php';
-    return PHPTAL_Php_Transformer::transform($src, '$ctx->');
+    return phptal_tales('php:this->' . $src);
 }

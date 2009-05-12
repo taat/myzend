@@ -1,7 +1,8 @@
 <?php
 
 /**
- * TODO Description of class...
+ * PHPTAL View
+ * Zend_Application Resource plugin
  *
  * @author TAAT
  * @version 1.0
@@ -15,11 +16,6 @@
      * @var string
      */
     protected $_view;
-
-    // GETTERS
-    // SETTERS
-    // PRIVATE METHODS
-    // PUBLIC METHODS
 
     /**
      * Initialize
@@ -38,30 +34,29 @@
      * @return null
      */
     public function getView() {
-        // setup PHPTAL
-        $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
-
         $view = new ZendX_Phptal_View();
-
-        $viewRenderer->setView($view)->init();
-
-        $phptal = new PHPTAL;
-        $view->setEngine($phptal);
+        $phptal = $view->getEngine();
 
         // set options from application config
         $class = new ReflectionClass('PHPTAL');
         foreach ($this->_options as $option=>$value) {
             $option = strtolower($option);
-            $method = 'set' . $option;
-            if ($option !== 'set' && $class->hasMethod($method)) {
-                $phptal->$method($value);
-            } else {
-                trigger_error("Invalid PHPTAL resource option '{$option}' in application config.");
-            }
-        }
 
-        // pre filter to support traditional Zend_View syntax in templates
-        $phptal->setPreFilter(new ZendX_Phptal_Filter_ZfSyntax());
+            if ('zendsyntax' === $option) {
+            // enable or disable Zend Syntax in the config
+                if ($value) {
+                    $phptal->setPreFilter(new ZendX_Phptal_Filter_ZfSyntax());
+                }
+            } else {
+            // other phptal options
+                $method = 'set' . $option;
+                if ($option !== 'set' && $class->hasMethod($method)) {
+                    $phptal->$method($value);
+                } else {
+                    throw new  ZendX_Phptal_Exception("Invalid PHPTAL resource option '{$option}' in application config.");
+                }
+            }
+        }
 
         $this->_view = $view;
         return $this->_view;

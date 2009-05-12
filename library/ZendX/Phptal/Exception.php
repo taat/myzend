@@ -5,7 +5,7 @@
  * @author TAAT
  * @version 1.0
  */
-class ZendX_Phptal_Exception extends Zend_View_Exception_Abstract {
+class ZendX_Phptal_Exception extends Zend_View_Exception {
     // PROPERTIES
 
     // GETTERS
