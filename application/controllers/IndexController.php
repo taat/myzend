@@ -17,7 +17,13 @@ class IndexController extends Zend_Controller_Action
             ->from('Test t')
             ->limit(2)
             ->execute();
-        var_dump($q->toArray());
+            var_dump($q->toArray());
+
+            // TODO: test doctrine session handler
+        $s = new Zend_Session_Namespace();
+        $s->testString = 'foo';
+        $s->testInt = 123;
+
     }
 
 

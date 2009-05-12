@@ -2,10 +2,10 @@
 <?php
 
 // use development database settings
-define('APPLICATION_ENV', 'development');
+define('APPLICATION_ENV', 'cli');
 
 // application.php is almost like index.php, but without running
-require_once 'doctrine-cli.php';
+require_once '../application/application.php';
 $application->bootstrap('doctrine');
 
 // run Doctrine CLI
