@@ -17,6 +17,21 @@ class ZendX_Phptal_View extends Zend_View_Abstract
         }
 
     /**
+     * Script file name to execute
+     *
+     * @var string
+     */
+    private $_file = null;
+
+    /**
+     * Filters
+     * @access private
+     * @var array
+     */
+    private $_filter = array();
+
+
+    /**
      * PHPTAL object
      * @access private
      * @var object PHPTAL
@@ -24,32 +39,78 @@ class ZendX_Phptal_View extends Zend_View_Abstract
     protected $_engine = null;
 
     /**
-     * Options array
-     * @access protected
+     * Use default Zend router view script by default
+     * @access private
      * @var string
      */
-    protected $_options = array();
+    private $_useDefaultScript = true;
 
     /**
-     * Gets the value of the private property 'options'
+     * Sets the value of the private property 'useDefautScript'
      *
      * @access public
-     * @return string
+     * @param bool $useDefautScript Property value
+     * @return ZendX_Phptal_View
      */
-    public function getOptions() {
-        return $this->_options;
+    public function setUseDefautScript($useDefautScript)
+    {
+        $this->_useDefautScript = $useDefautScript;
+        return $this;
     }
 
+    /**
+     * Gets the value of the private property 'useDefaultScript'
+     *
+     * @access public
+     * @return bool
+     */
+    public function getUseDefaultScript() {
+        return $this->_useDefaultScript;
+    }
 
     /**
-     * Plug in PHPTAL object into View
-     *
-     * @name setEngine
+     * Set phptal template
      * @access public
-     * @param object PHPTAL $engine
+     * @param string $filename Template source filename
+     * @return ZendX_Phptal_View
      */
-    public function setEngine(PHPTAL $engine) {
+    public function setTemplate($filename) {
+        $this->_engine->setTemplate($filename);
+        $this->_useDefaultScript = false;
+        return $this;
+    }
 
+    /**
+     * Get Template filename
+     * @access public
+     * @return string Template filename
+     */
+    public function getTemplate() {
+        return $this->_engine->getTemplate();
+    }
+
+    /**
+     * Set template source
+     * @access public
+     * @param string $xhtml
+     * @return ZendX_Phptal_View
+     */
+    public function setSource($xhtml)
+    {
+        $this->_engine->setSource($xhtml);
+        $this->_useDefaultScript = false;
+        return $this;
+    }
+
+    /**
+     * Add source resolver to Phptal
+     * @access public
+     * @param PHPTAL_SourceResolver $resolver
+     * @return ZendX_Phptal_View
+     */
+     public function addSourceResolver(PHPTAL_SourceResolver $resolver)
+    {
+        $this->_engine->addSourceResolver($resolver);
         return $this;
     }
 
@@ -60,9 +121,9 @@ class ZendX_Phptal_View extends Zend_View_Abstract
      * @access public
      */
     public function getEngine()
-        {
-            return $this->_engine;
-        }
+    {
+        return $this->_engine;
+    }
 
     /**
      * Set PHPTAL variables
@@ -72,9 +133,9 @@ class ZendX_Phptal_View extends Zend_View_Abstract
      * @param string $value variable value
      */
     public function __set($key, $value)
-        {
-            $this->_engine->set($key, $value);
-        }
+    {
+        $this->_engine->set($key, $value);
+    }
 
     /**
      * Get PHPTAL Variable Value
@@ -122,24 +183,42 @@ class ZendX_Phptal_View extends Zend_View_Abstract
      * @access public
      */
     public function __clone()
-        {
-            $this->_engine = clone $this->_engine;
+    {
+        $this->_engine = clone $this->_engine;
+    }
+
+    /**
+    * Processes a view script and returns the output.
+    *
+    * @param string $name The script script name to process.
+    * @return string The script output.
+    */
+    public function render($name)
+    {
+        $this->_file = $this->_script($name);
+
+        if ($this->_useDefaultScript) {
+            $this->_engine->setTemplate($this->_file);
         }
+        try {
+            $code =  $this->_engine->execute();
+        } catch (ZendX_Phptal_Exception $e) {
+            throw new Zend_View_Exception($e);
+        }
+        $this->_run($this->_file);
+
+        // Zend filters should be applied here
+        return $code;
+    }
 
     /**
      * Display template
-     *
+     * Required by Zend_View_Abstract
      * @access protected
      */
-    protected function _run(){
-        $this->_engine->setTemplate(func_get_arg(0));
-            try {
-                echo $this->_engine->execute();
-            } catch (ZendX_Phptal_Exception $e) {
-                throw new Zend_View_Exception($e);
-            }
-        }
-} // end Zend_View_Abstract
+    protected function _run(){}
+
+}
 
 /**
 * helper: custom PHPTAL modifier
